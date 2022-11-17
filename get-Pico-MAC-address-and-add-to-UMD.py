@@ -79,3 +79,5 @@ else:
 
 
 
+#https://picockpit.com/raspberry-pi/everything-about-the-raspberry-pi-pico-w/#Connecting_to_WiFi
+    
