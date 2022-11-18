@@ -1,97 +1,90 @@
+# Sources: https://picockpit.com/raspberry-pi/everything-about-the-raspberry-pi-pico-w/#Connecting_to_WiFi 
+# and https://core-electronics.com.au/guides/raspberry-pi-pico-w-create-a-simple-http-server/
 
-# Simple HTTP Server Example
-# Control an LED and read a Button using a web browser
-
-import time
+import rp2
 import network
+import ubinascii
+import machine
+import urequests as requests
+import time
 import socket
-from machine import Pin
 
-led = Pin(15, Pin.OUT)
-ledState = 'LED State Unknown'
-
-button = Pin(16, Pin.IN, Pin.PULL_UP)
-
-ssid = ''
-password = ''
+page = open("index.html", "r")
+html = page.read()
+page.close()
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-wlan.connect(ssid, password)
+# If you need to disable powersaving mode
+# wlan.config(pm = 0xa11140)
 
-html = """<!DOCTYPE html>
-<html>
-<head> <title>Pico W</title> </head>
-<body> <h1>Pico W HTTP Server</h1>
-<p>Hello, World!</p>
-<p>%s</p>
-</body>
-</html>
-"""
+# See the MAC address in the wireless chip OTP
+mac = ubinascii.hexlify(network.WLAN().config('mac'),':').decode()
+print('mac = ' + mac)
 
-# Wait for connect or fail
-max_wait = 10
-while max_wait > 0:
+# Other things to query
+# print(wlan.config('channel'))
+# print(wlan.config('essid'))
+# print(wlan.config('txpower'))
+
+# Load login data from different file for safety reasons
+ssid = 'PeaceisAwesome'
+pw = '32439344'
+
+wlan.connect(ssid, pw)
+
+# Wait for connection with 10 second timeout
+timeout = 10
+while timeout > 0:
     if wlan.status() < 0 or wlan.status() >= 3:
         break
-    max_wait -= 1
-    print('waiting for connection...')
+    timeout -= 1
+    print('Waiting for connection...')
     time.sleep(1)
+
+# Define blinking function for onboard LED to indicate error codes    
+def blink_onboard_led(num_blinks):
+    led = machine.Pin('LED', machine.Pin.OUT)
+    for i in range(num_blinks):
+        led.on()
+        time.sleep(.2)
+        led.off()
+        time.sleep(.2)
     
 # Handle connection error
-if wlan.status() != 3:
-    raise RuntimeError('network connection failed')
+# Error meanings
+# 0  Link Down
+# 1  Link Join
+# 2  Link NoIp
+# 3  Link Up
+# -1 Link Fail
+# -2 Link NoNet
+# -3 Link BadAuth
+
+wlan_status = wlan.status()
+blink_onboard_led(wlan_status)
+
+if wlan_status != 3:
+    raise RuntimeError('Wi-Fi connection failed')
 else:
     print('Connected')
     status = wlan.ifconfig()
-    print( 'ip = ' + status[0] )
+    print('ip = ' + status[0])
     
-    
-# Open socket
 addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
 s = socket.socket()
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind(addr)
 s.listen(1)
-print('listening on', addr)
-
-# Listen for connections, serve client
 while True:
-    try:       
-        cl, addr = s.accept()
-        print('client connected from', addr)
-        request = cl.recv(1024)
-        print("request:")
-        print(request)
-        request = str(request)
-        led_on = request.find('led=on')
-        led_off = request.find('led=off')
-        
-        print( 'led on = ' + str(led_on))
-        print( 'led off = ' + str(led_off))
-        
-        if led_on == 8:
-            print("led on")
-            led.value(1)
-        if led_off == 8:
-            print("led off")
-            led.value(0)
-        
-        ledState = "LED is OFF" if led.value() == 0 else "LED is ON" # a compact if-else statement
-        
-        if button.value() == 1: # button not pressed
-            print("button NOT pressed")
-            buttonState = "Button is NOT pressed"
-        else:
-            print("button pressed")
-            buttonState = "Button is pressed"
-        
-        # Create and send response
-        stateis = ledState + " and " + buttonState
-        response = html % stateis
-        cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
-        cl.send(response)
-        cl.close()
-        
-    except OSError as e:
-        cl.close()
-        print('connection closed')
+    cl, addr = s.accept()
+    cl_file = cl.makefile('rwb', 0)
+    while True:
+        line = cl_file.readline()
+        if not line or line == b'\r\n':
+            break
+    response = html 
+    
+    cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
+    cl.send(response)
+    cl.close()
