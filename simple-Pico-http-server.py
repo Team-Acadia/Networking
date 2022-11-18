@@ -1,5 +1,6 @@
 # Sources: https://picockpit.com/raspberry-pi/everything-about-the-raspberry-pi-pico-w/#Connecting_to_WiFi 
 # and https://core-electronics.com.au/guides/raspberry-pi-pico-w-create-a-simple-http-server/
+# https://thepihut.com/blogs/raspberry-pi-tutorials/wireless-communication-between-two-raspberry-pi-pico-w-boards
 
 import rp2
 import network
