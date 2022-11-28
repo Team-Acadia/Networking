@@ -1,0 +1,131 @@
+/*
+ *  This sketch demonstrates how to set up a simple HTTP-like server.
+ *  The server will set a GPIO pin depending on the request
+ *    http://server_ip/data ,
+ *  server_ip is the IP address of the ESP8266 module, will be 
+ *  printed to Serial when the module is connected.
+ */
+
+#include <ESP8266WiFi.h>
+#include <string>
+#include <string.h>
+//#include <stdio.h>
+const char* ssid = "PeaceisAwesome";
+const char* password = "32439344";
+
+// Create an instance of the server
+// specify the port to listen on as an argument
+WiFiServer server(80);
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  // prepare GPIO2
+  pinMode(2, OUTPUT);
+  digitalWrite(2, 0);
+  
+  // Connect to WiFi network
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  
+  // Start the server
+  server.begin();
+  Serial.println("Server started");
+
+  // Print the IP address
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  // Check if a client has connected
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+  
+  // Wait until the client sends some data
+  Serial.println("new client");
+  while(!client.available()){
+    delay(1);
+  }
+  
+  // Read the first line of the request
+  String req = client.readStringUntil('\r');
+  Serial.println("reqValue");
+  Serial.println(req);
+  Serial.println("End of req value");
+  int ln = req.length();
+  Serial.println("length");
+  Serial.println(ln);
+  int indH; //index of H from my HTTP post request from my client
+  for(int i=0;i<=ln;i++){ //this gets me the index of H in my HTTP request from client
+    if(req[i] == 'H'){
+      indH = i;
+      }
+    }
+  int indR = indH - 7; //getting the length of the data from the client
+  char result[indR]; //initializing an array of the length of that data
+  //char result[indR];
+  Serial.println("Index of H"); //getting the index of the H so I can get the length of the data
+  Serial.println(indH);
+  for(int i=6;i<=indH-1;i++){ //I try to get the value of the data section of the HTTP request
+    result[i-6] = req[i]; //adding the characters to my result array
+    }
+  //result[indR]="/0";
+  Serial.println("value of result"); //debugging to make sure I am getting the right results
+  for(int i=0;i<=indR;i++){
+    Serial.print(result[i]);
+    }
+  Serial.println(""); 
+  int degit=atoi(result); //using atoi to turn my array of chars into a whole int
+  Serial.println("Value of result int");
+  Serial.println(degit);
+  client.flush();
+  
+  // Match the request
+  int val;
+  int threshold = 50; //creating a threshold to figure out if to turn a gpio pin high or low 
+  if (degit > threshold){
+    val = 1;
+    Serial.println("HIGH");
+    }
+  else if(degit < threshold){
+      val = 0;
+    Serial.println("LOW");
+      }
+  else {
+    Serial.println("invalid request");
+    client.stop();
+    return;
+  }
+
+  // Set GPIO2 according to the request
+  digitalWrite(2, val);
+  
+  client.flush();
+
+  // Prepare the response
+  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
+  s += (val)?"high":"low";
+  s += "</html>\n";
+
+  // Send the response to the client
+  client.print(s);
+  delay(1);
+  Serial.println("Client disonnected");
+
+  // The client will actually be disconnected 
+  // when the function returns and 'client' object is detroyed
+}
+
