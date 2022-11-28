@@ -1,0 +1,21 @@
+# Program to read RGB values from a local Pico Web Server
+# Tony Goodhew 5th July 2022
+# Connect to network
+import network
+import time
+import socket
+import urequests as requests
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect("PeaceisAwesome", "32439344")
+while not wlan.isconnected() and wlan.status() >= 0:
+    print("Waiting to connect:")
+    time.sleep(1)
+print("connected")
+# Should be connected and have an IP address
+wlan.status() # 3 == success
+wlan.ifconfig()
+print(wlan.ifconfig())
+url = "http://192.168.137.113/" + str(48)
+while 1:
+    r = requests.post(url,data="value")        # Close socket
