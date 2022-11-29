@@ -1,7 +1,8 @@
 /*
  *  This sketch demonstrates how to set up a simple HTTP-like server.
  *  The server will set a GPIO pin depending on the request
- *    http://server_ip/data ,
+ *    http://server_ip/gpio/0 will set the GPIO2 low,
+ *    http://server_ip/gpio/1 will set the GPIO2 high
  *  server_ip is the IP address of the ESP8266 module, will be 
  *  printed to Serial when the module is connected.
  */
@@ -12,7 +13,8 @@
 //#include <stdio.h>
 const char* ssid = "PeaceisAwesome";
 const char* password = "32439344";
-
+const char* host = "api.pushingbox.com";
+const char* devid = "vD71FF0DF2BF5426";
 // Create an instance of the server
 // specify the port to listen on as an argument
 WiFiServer server(80);
@@ -47,10 +49,17 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
+//--------------------------------Defining global variables for clients ---------------------------------------------------------------------------------------------
+ double degit;
+ int sep=0;
 void loop() {
+  delay(5000);
+  //-------------------------------------------------------------------PICO W section -----------------------------------------------------------------------------------
   // Check if a client has connected
+  if (sep ==0){
   WiFiClient client = server.available();
   if (!client) {
+    Serial.println("no client advailable");
     return;
   }
   
@@ -77,55 +86,68 @@ void loop() {
   int indR = indH - 7; //getting the length of the data from the client
   char result[indR]; //initializing an array of the length of that data
   //char result[indR];
-  Serial.println("Index of H"); //getting the index of the H so I can get the length of the data
+  Serial.println("Index of H");
   Serial.println(indH);
   for(int i=6;i<=indH-1;i++){ //I try to get the value of the data section of the HTTP request
-    result[i-6] = req[i]; //adding the characters to my result array
+    result[i-6] = req[i];
     }
   //result[indR]="/0";
-  Serial.println("value of result"); //debugging to make sure I am getting the right results
+  Serial.println("value of result");
   for(int i=0;i<=indR;i++){
     Serial.print(result[i]);
     }
-  Serial.println(""); 
-  int degit=atoi(result); //using atoi to turn my array of chars into a whole int
+  Serial.println("");
+  degit=atof(result);
   Serial.println("Value of result int");
-  Serial.println(degit);
+  Serial.println(degit,4);
   client.flush();
-  
-  // Match the request
-  int val;
-  int threshold = 50; //creating a threshold to figure out if to turn a gpio pin high or low 
-  if (degit > threshold){
-    val = 1;
-    Serial.println("HIGH");
-    }
-  else if(degit < threshold){
-      val = 0;
-    Serial.println("LOW");
-      }
-  else {
-    Serial.println("invalid request");
-    client.stop();
-    return;
+  client.stop();
+  sep = 1;
+  }
+  //------------------------------------------------Pushing box version-----------------------------------------------------------------
+  if(sep == 1){
+    if(degit>0.02){
+  Serial.print("connecting to ");
+  Serial.println(host);
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 80;
+  if (!client.connect(host, httpPort)) {
+      Serial.println("connection failed");
+      return;
   }
 
-  // Set GPIO2 according to the request
-  digitalWrite(2, val);
+  // We now create a URI for the request
+  String url = "/pushingbox";
+  url += "?devid=";
+  url += devid;
   
-  client.flush();
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
 
-  // Prepare the response
-  String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now ";
-  s += (val)?"high":"low";
-  s += "</html>\n";
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+      if (millis() - timeout > 5000) {
+          Serial.println(">>> Client Timeout !");
+          client.stop();
+          return;
+      }
+  }
 
-  // Send the response to the client
-  client.print(s);
-  delay(1);
-  Serial.println("Client disonnected");
+  // Read all the lines of the reply from server and print them to Serial
+  while(client.available()) {
+      String line = client.readStringUntil('\r');
+      Serial.print(line);
+  }
 
-  // The client will actually be disconnected 
-  // when the function returns and 'client' object is detroyed
+  Serial.println();
+  Serial.println("closing connection");
+  }else{Serial.println("Threshold not met");}}
+ sep = 0;
+  
 }
-
