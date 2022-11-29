@@ -16,6 +16,6 @@ print("connected")
 wlan.status() # 3 == success
 wlan.ifconfig()
 print(wlan.ifconfig())
-url = "http://192.168.137.113/" + str(48)
-while 1:
-    r = requests.post(url,data="value")        # Close socket
+url = "http://192.168.137.34/" + str(0.03856)
+r = requests.post(url,data="value")        # Close socket
+print("sent data")
