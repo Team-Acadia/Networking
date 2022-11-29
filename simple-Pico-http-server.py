@@ -2,6 +2,8 @@
 # and https://core-electronics.com.au/guides/raspberry-pi-pico-w-create-a-simple-http-server/
 # https://thepihut.com/blogs/raspberry-pi-tutorials/wireless-communication-between-two-raspberry-pi-pico-w-boards
 
+##TODO: USE THIS ONE NEXT https://picockpit.com/raspberry-pi/stream-sensor-data-over-wifi-with-raspberry-pi-pico-w/
+
 import rp2
 import network
 import ubinascii
