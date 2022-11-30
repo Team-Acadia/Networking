@@ -5,6 +5,8 @@ import network
 import time
 import socket
 import urequests as requests
+import json
+import gc
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect("PeaceisAwesome", "32439344")
@@ -16,6 +18,41 @@ print("connected")
 wlan.status() # 3 == success
 wlan.ifconfig()
 print(wlan.ifconfig())
-url = "http://192.168.137.34/" + str(0.03856)
-r = requests.post(url,data="value")        # Close socket
+url = "http://192.168.137.186/" + str(0.03856)
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0',
+    'ACCEPT' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'ACCEPT-ENCODING' : 'gzip, deflate, br',
+    'ACCEPT-LANGUAGE' : 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+    'REFERER' : 'https://www.google.com/'
+}
+SensorD = 15
+url = "http://192.168.137.167/" + str(SensorD)
+print("before")
+def notification():
+    gc.collect()
+    resp = None
+    try:
+        body = "Sensor Data"
+        title = "Fall Detected"
+        data_sent = {"type":"note","title":title,"body":body}
+        API_KEY = 'o.Ywi05DOBMqM3jdGJ5FdGEwd6STLclHuj'
+        pb_headers = {
+        'Authorization': 'Bearer ' + API_KEY,
+        'Content-Type': 'application/json',
+        'Host': 'api.pushbullet.com'
+        }
+        resp = requests.post('https://api.pushbullet.com/v2/pushes',data=json.dumps(data_sent),headers=pb_headers)
+    except Exception as e:
+        if isinstance(e, OSError) and resp:
+            resp.close()
+        value = {"error":e}
+    gc.collect()
+    return
+if SensorD ==15:
+    r = requests.post(url,data="value")
+    print(r.text)
+    print("after")
+    notification()
+    # Close sock
 print("sent data")
