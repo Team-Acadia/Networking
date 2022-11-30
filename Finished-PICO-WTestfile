@@ -18,7 +18,6 @@ print("connected")
 wlan.status() # 3 == success
 wlan.ifconfig()
 print(wlan.ifconfig())
-url = "http://192.168.137.186/" + str(0.03856)
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0',
     'ACCEPT' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -27,7 +26,7 @@ headers = {
     'REFERER' : 'https://www.google.com/'
 }
 SensorD = 15
-url = "http://192.168.137.167/" + str(SensorD)
+url = "http://192.168.137.196/" + str(SensorD)
 print("before")
 def notification():
     gc.collect()
@@ -49,7 +48,7 @@ def notification():
         value = {"error":e}
     gc.collect()
     return
-if SensorD ==15:
+if SensorD >10:
     r = requests.post(url,data="value")
     print(r.text)
     print("after")
