@@ -4,6 +4,12 @@
 
 ##TODO: USE THIS ONE NEXT https://picockpit.com/raspberry-pi/stream-sensor-data-over-wifi-with-raspberry-pi-pico-w/
 
+# Sources: https://picockpit.com/raspberry-pi/everything-about-the-raspberry-pi-pico-w/#Connecting_to_WiFi 
+# and https://core-electronics.com.au/guides/raspberry-pi-pico-w-create-a-simple-http-server/
+# https://thepihut.com/blogs/raspberry-pi-tutorials/wireless-communication-between-two-raspberry-pi-pico-w-boards
+
+##TODO: USE THIS ONE NEXT https://picockpit.com/raspberry-pi/stream-sensor-data-over-wifi-with-raspberry-pi-pico-w/
+
 import rp2
 import network
 import ubinascii
@@ -11,6 +17,7 @@ import machine
 import urequests as requests
 import time
 import socket
+
 
 page = open("index.html", "r")
 html = page.read()
@@ -31,8 +38,8 @@ print('mac = ' + mac)
 # print(wlan.config('txpower'))
 
 # Load login data from different file for safety reasons
-ssid = 'PeaceisAwesome'
-pw = '32439344'
+ssid = 'iPhone (44)'
+pw = '6h0eupmr6hira'
 
 wlan.connect(ssid, pw)
 
@@ -86,8 +93,13 @@ while True:
         line = cl_file.readline()
         if not line or line == b'\r\n':
             break
-    response = html 
+    response = html
+    
+    response = response.replace('AccX', '0')
+    response = response.replace('AccY', '1')
+    response = response.replace('AccZ', '2')
     
     cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
     cl.send(response)
     cl.close()
+
