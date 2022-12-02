@@ -1,0 +1,34 @@
+
+#define espComms Serial
+#define WiFiComms Serial1
+
+void setup() {
+  espComms.setTX(28)
+  espComms.setRX(8)
+  // put your setup code here, to run once:
+  espComms.begin(115200);
+  WiFiComms.begin(9600);
+  while(!espComms);
+  espComms.print(">");
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (espComms.available()){
+    while(espComms.available()){
+      int c = WiFiComms.read();
+      espComms.write((char)c);
+      }
+    }
+    //-------------Message coming from ESP8266----------------------------------------
+    if (espComms.available()){
+      delay(10);
+      String cmd = "";
+      while(espComms.available()){
+        cmd += (char)espComms.read();
+        }
+        WiFiComms.print(cmd);
+        WiFiComms.print("Hello");
+      }
+}
