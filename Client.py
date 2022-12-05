@@ -5,7 +5,7 @@ import network
 import time
 # secret import ssid, password
 import socket
-
+import random
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect('PeaceisAwesome', '32439344')
@@ -18,18 +18,21 @@ wlan.status() # 3 == success
 wlan.ifconfig()
 print(wlan.ifconfig())
 
-while True:
-    ai = socket.getaddrinfo("192.168.137.67", 80) # Address of Web Server
-    addr = ai[0][-1]
 
-    # Create a socket and make a HTTP request
-    s = socket.socket() # Open socket
-    s.connect(addr)
-    s.send(b"SEND Data") # Send request
-    ss=str(s.recv(512)) # Store reply
-    # Print what we received
-    print(ss)
-    # Set RGB LED here
-    s.close()          # Close socket
-    time.sleep(0.2)    # wait
+while True:
+    sensorData = random.randrange(10,50,3)
+    if sensorData >45:
+        ai = socket.getaddrinfo("192.168.137.238", 80) # Address of Web Server
+        addr = ai[0][-1]
+
+        # Create a socket and make a HTTP request
+        s = socket.socket() # Open socket
+        s.connect(addr)
+        s.send(str(sensorData)) # Send request
+        ss=str(s.recv(512)) # Store reply
+        # Print what we received
+        print(ss)
+        # Set RGB LED here
+        s.close()          # Close socket
+
 
