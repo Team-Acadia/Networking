@@ -1,5 +1,4 @@
-# Webserver to send RGB data
-# Tony Goodhew 5 July 2022
+
 import network
 import socket
 import time
@@ -59,13 +58,22 @@ def notification():
         value = {"error":e}
     gc.collect()
     return
-while True:
+
+def handleRequest():
+    print("Entered if statement")
+    seq = 1
+    sensordata=int(request)
+    if seq == 1:
+        notification()
+seq =0
+while seq==0:
     try:
         cl, addr = s.accept()
         print('client connected from', addr)
         request = cl.recv(1024)
         print(request)
-        notification()
+        if request:
+            handleRequest()
         response = "Alerted Caregiver"
         cl.send(response)
         cl.close()
@@ -73,3 +81,6 @@ while True:
     except OSError as e:
         cl.close()
         print('connection closed')
+        
+
+
