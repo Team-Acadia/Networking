@@ -1,11 +1,16 @@
 # Program to read RGB values from a local Pico Web Server
-# Tony Goodhew 5th July 2022
 # Connect to network
 import network
 import time
 # secret import ssid, password
 import socket
 import random
+from machine import Pin
+
+button = Pin(0, Pin.IN, Pin.PULL_UP)
+led = Pin('LED', Pin.OUT)
+
+
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect('PeaceisAwesome', '32439344')
@@ -20,9 +25,11 @@ print(wlan.ifconfig())
 
 
 while True:
-    sensorData = random.randrange(10,50,3)
-    if sensorData >45:
-        ai = socket.getaddrinfo("192.168.137.238", 80) # Address of Web Server
+    sensorData = 67
+    if button.value() == 1:
+        seq =1
+    if seq == 1:
+        ai = socket.getaddrinfo("192.168.137.41", 80) # Address of Web Server
         addr = ai[0][-1]
 
         # Create a socket and make a HTTP request
@@ -34,5 +41,6 @@ while True:
         print(ss)
         # Set RGB LED here
         s.close()          # Close socket
+    seq = 0
 
 
