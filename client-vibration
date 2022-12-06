@@ -36,7 +36,7 @@ while True:
     last20.pop()
     last20.append(POT_Value.read_u16() * conversion_factor)
     #detect spike
-    if curr > avg * 1.5:
+    if curr > avg +.05:
         count = count + 1
         print("Number:",  count, "VOLTAGE SPIKE.  AVG:", avg, "CURR", curr, "difference:", curr-avg, "Percent Diff:", (curr-avg)/avg*100)
         next20 = []
