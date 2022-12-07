@@ -37,6 +37,7 @@ while True:
     last20.append(POT_Value.read_u16() * conversion_factor)
     #detect spike
     if curr > avg +.05:
+        print(curr)
         count = count + 1
         print("Number:",  count, "VOLTAGE SPIKE.  AVG:", avg, "CURR", curr, "difference:", curr-avg, "Percent Diff:", (curr-avg)/avg*100)
         next20 = []
@@ -45,7 +46,7 @@ while True:
             next20.append(POT_Value.read_u16() * conversion_factor)
             utime.sleep(0.01)
         print(last20[-5:], next20[0:5])
-        ai = socket.getaddrinfo("192.168.137.250", 80) # Address of Web Server
+        ai = socket.getaddrinfo("192.168.137.98", 80) # Address of Web Server
         addr = ai[0][-1]
 
         # Create a socket and make a HTTP request
