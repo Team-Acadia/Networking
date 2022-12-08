@@ -6,7 +6,7 @@ import socket
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-wlan.connect('PeaceisAwesome', '32439344')
+wlan.connect('Bill Wi the science Fi', 'BillBillBill')
 while not wlan.isconnected() and wlan.status() >= 0:
     print("Waiting to connect:")
     utime.sleep(1)
@@ -16,6 +16,7 @@ wlan.status() # 3 == success
 wlan.ifconfig()
 print(wlan.ifconfig())
 
+a = Pin("LED",Pin.OUT)
 
 #Initialize Prepherials
 POT_Value = ADC(28) 
@@ -31,12 +32,13 @@ for i in range(20):
 
 #Main Application loop
 while True:
+    a.value(1)
     curr = POT_Value.read_u16() * conversion_factor
     avg = sum(last20)/20
     last20.pop()
     last20.append(POT_Value.read_u16() * conversion_factor)
     #detect spike
-    if curr > avg +.05:
+    if curr > avg +.01:
         print(curr)
         count = count + 1
         print("Number:",  count, "VOLTAGE SPIKE.  AVG:", avg, "CURR", curr, "difference:", curr-avg, "Percent Diff:", (curr-avg)/avg*100)
@@ -46,7 +48,7 @@ while True:
             next20.append(POT_Value.read_u16() * conversion_factor)
             utime.sleep(0.01)
         print(last20[-5:], next20[0:5])
-        ai = socket.getaddrinfo("192.168.137.98", 80) # Address of Web Server
+        ai = socket.getaddrinfo("192.168.68.128", 80) # Address of Web Server
         addr = ai[0][-1]
 
         # Create a socket and make a HTTP request
