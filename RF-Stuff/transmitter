@@ -1,0 +1,17 @@
+import time
+from machine import Pin
+
+out = Pin(15, Pin.OUT)
+OUTPUT_LEN = .1
+
+def outputKey(num):
+    for i in num:
+        print(i)
+        out.value(int(i))
+        time.sleep(OUTPUT_LEN)
+
+key= "101010101010"
+
+outputKey(key)
+outputKey(key)
+outputKey(key)
