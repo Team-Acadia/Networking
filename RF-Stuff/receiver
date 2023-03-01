@@ -1,0 +1,24 @@
+import Adafruit_BBIO.GPIO as GPIO
+import time
+
+# Set up the input pin for IR sensor
+rf_pin = "P8_8"
+GPIO.setup(rf_pin, GPIO.IN)
+bitsQueue = []
+ID = []
+ones = 0
+zeros = 0
+key = [1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0]
+for i in range(10000000000):
+        # If motion is detected, turn on the LED
+        if len(ID) < len(key):
+                print(ID)
+                ID.append(GPIO.input(rf_pin))
+        else:
+                print(ID)
+                ID.append(GPIO.input(rf_pin))
+                ID.pop(0)
+        if ID == key:
+                break
+        time.sleep(0.05)
+print("target:",ID)
