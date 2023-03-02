@@ -65,3 +65,5 @@ while True:
                 bitsQueue.append(GPIO.input(rf_pin))
                 bitsQueue.pop(0)
         time.sleep(POLLING_FREQUENCY)
+
+print("vibrations sensed: ", vibrations_sensed)
