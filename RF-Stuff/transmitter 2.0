@@ -1,0 +1,29 @@
+import time
+from machine import Pin
+
+out = Pin(15, Pin.OUT)
+#How long each bit will be outputted (held high or low) before next bit, in seconds
+OUTPUT_TIME_PER_BIT = .1
+
+#There are 3 vibration sensors, each with an individual number and key to identify it
+sensor_num = 0
+key = "100" + "101" + "101" + "001"
+#sensor_num = 1
+#key = "110" + "010" + "101" + "001"
+#sensor_num = 2
+#key = "101" + "110" + "011" + "101"
+
+time.sleep(1*sensor_num)
+
+#output bit
+def outputKey(num):
+    for i in num:
+        print(i)
+        out.value(int(i))
+        time.sleep(OUTPUT_LEN)
+
+
+#output key 3 times in a row because there is a samll chance it is not recieved
+outputKey(key)
+outputKey(key)
+outputKey(key)
