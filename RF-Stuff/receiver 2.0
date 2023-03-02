@@ -1,0 +1,67 @@
+import Adafruit_BBIO.GPIO as GPIO
+import time
+
+# Set up the input pin for IR sensor
+rf_pin = "P8_8"
+GPIO.setup(rf_pin, GPIO.IN)
+
+POLLING_FREQUENCY = .05 #how often the input is checked
+WAIT_AFTER_RCV = 2.5 #how many seconds to wait and listen for more data after first message
+
+#There are 3 vibration sensors, each with an individual number and key to identify it
+#Make each a list to compare to bit array in loop. Easier to read this way
+key_0 = list( "100" + "101" + "101" + "001") #sensor num: 0
+key_1 = list( "110" + "010" + "101" + "001") #sensor num: 1
+key_2 = list( "101" + "110" + "011" + "101") #sensor num: 2
+
+# keep rolling queue of past 12 bits and check if it matches our keys
+keyLength = len(key0)
+bitsQueue = []
+vibrations_sensed = [0,0,0]
+countdown = 0
+cycles_to_wait = -1
+for i in range(0,keyLength*2,2): #make keys double bc polling is double emmission bit rate
+  key0[i]= int(key_0[i])
+  key0[i+1]= int(key_0[i])
+  key1[i]= int(key_1[i])
+  key1[i+1]= int(key_1[i])
+  key2[i]= int(key_2[i])
+  key2[i+1]= int(key_2[i])
+
+#begin by filling empty queue with first bits
+for i in range(9)
+        bitsQueue.append(GPIO.input(rf_pin))
+
+while True:
+        #check if current bit string matches a key
+        if bitsQueue == key0:
+                print("Found key0: ", bitsQueue)
+                #allow time for other vibration sensors to also send thier data
+                vibrations_sensed[0] = 1
+                cycles_to_wait = int(WAIT_AFTER_RCV / POLLING_FREQUENCY)
+                
+        if bitsQueue == key1:
+                print("Found key1: ", bitsQueue)
+                #2nd sensor to send data
+                vibrations_sensed[1] = 1
+                cycles_to_wait = int(WAIT_AFTER_RCV / (2*POLLING_FREQUENCY))
+                
+        if bitsQueue == key2:
+                print("Found key2: ", bitsQueue)
+                #Final sensor to send data
+                vibrations_sensed[2] = 1
+                break
+                
+         if cycles_to_wait == -1:
+                continue
+         if cycles_to_wait == 1:
+                break
+         else:
+                cycles_to_wait = cycles_to_wait - 1
+                
+        #remove add new bit and remove oldest one
+        else:
+                print(bitsQueue)
+                bitsQueue.append(GPIO.input(rf_pin))
+                bitsQueue.pop(0)
+        time.sleep(POLLING_FREQUENCY)
