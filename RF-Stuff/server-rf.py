@@ -127,8 +127,6 @@ def handleWifi():
             
 seq =0
 _thread.start_new_thread(handleWifi,())
-
-while True:
-    handleRf(ID)
+handleRf(ID)
 
         
