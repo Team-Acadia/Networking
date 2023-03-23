@@ -7,13 +7,27 @@ import gc
 import urequests as requests
 import json
 import _thread
+
+
+#------------Buzzer to check if running ---------------
+
+buzzer_pin = Pin(0, Pin.OUT)
+
+# Generate a 2 kHz square wave for 1 second
+for i in range(1000):
+    buzzer_pin.on()
+    time.sleep_us(250)  # 50% duty cycle
+    buzzer_pin.off()
+    time.sleep_us(250)
+
+buzzer_pin.off()
+#--------------Defining the wifi components ----------------------------------------------
 rf_pin = Pin(26,Pin.IN)
 a = Pin(0,Pin.IN,Pin.PULL_UP)
 b = Pin(15,Pin.OUT)
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect("PeaceisAwesome", "32439344")
-       
 # Wait for connect or fail
 max_wait = 10
 while max_wait > 0:
@@ -106,10 +120,10 @@ def handleRf(ID):
             print("Target: ",ID)
         time.sleep(0.05)
 def handleWifi():
-    print("test2")
     #-----------Checking to see If I get a wifi connection from a client------------
     while seq==0:
         try:
+            print("test2")
             cl, addr = s.accept()
             print('client connected from', addr)
             request = cl.recv(1024)
@@ -126,6 +140,7 @@ def handleWifi():
             print('connection closed')
             
 seq =0
+
 _thread.start_new_thread(handleWifi,())
 handleRf(ID)
 
