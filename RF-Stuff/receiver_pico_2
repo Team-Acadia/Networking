@@ -16,7 +16,7 @@ for i in range(10000000000):
             bitsQueue.append(0)
             bitsQueue.pop(0)
         print(rf_value, bitsQueue)
-        if bitsQueue = [1,0,1,0,1,0,1,0,1,0,1,0]:
+        if bitsQueue == [1,0,1,0,1,0,1,0,1,0,1,0]:
             break:
         time.sleep(0.05)
         
