@@ -1,0 +1,11 @@
+import machine
+import time
+import utime
+
+# Set up the input pin for IR sensor
+rf_pin = machine.ADC(26)
+
+for i in range(10000000000):
+        rf_value = rf_pin.read_u16()
+        print(rf_value)
+        time.sleep(0.05)
