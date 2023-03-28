@@ -1,0 +1,69 @@
+import machine
+import time
+import utime
+
+POLLING_FREQUENCY = .025 #how often the input is checked
+WAIT_AFTER_RCV = 2.5 #how many seconds to wait and listen for more data after first message
+
+# Set up the input pin for IR sensor
+rf_pin = machine.ADC(26)
+
+key_0 = "100" + "101" + "101" + "001" #sensor num: 0
+key_1 = "110" + "010" + "101" + "001" #sensor num: 1
+key_2 = "101" + "110" + "011" + "101" #sensor num: 2
+
+keyLength = len(key_0)
+vibrations_sensed = [0,0,0]
+countdown = 0
+cycles_to_wait = -1
+
+key0 = [0]*12
+key1 = [0]*12
+key2 = [0]*12
+for i in range(0,keyLength): #make keys double bc polling is double emmission bit rate
+  key0[i]= int(key_0[i])
+  key1[i]= int(key_1[i])
+  key2[i]= int(key_2[i])
+
+bitsQueue = [2,2,2,2,2,2,2,2,2,2,2,2] # 2 is a placeholder, not 1 or 0
+
+for i in range(10000000000):
+        rf_value = rf_pin.read_u16()
+        if rf_value > 60000:
+            bitsQueue.append(1)
+            bitsQueue.pop(0)
+        if rf_value < 500:
+            bitsQueue.append(0)
+            bitsQueue.pop(0)
+        else:
+            bitsQueue.append(2)
+            bitsQueue.pop(0)
+        print(rf_value, bitsQueue)
+        
+        #check if current bit string matches a key
+        if bitsQueue == key0:
+                print("Found key0: ", bitsQueue)
+                #allow time for other vibration sensors to also send thier data
+                vibrations_sensed[0] = 1
+                cycles_to_wait = int(WAIT_AFTER_RCV / POLLING_FREQUENCY)
+                
+        if bitsQueue == key1:
+                print("Found key1: ", bitsQueue)
+                #2nd sensor to send data
+                vibrations_sensed[1] = 1
+                cycles_to_wait = int(WAIT_AFTER_RCV / (2*POLLING_FREQUENCY))
+                
+        if bitsQueue == key2:
+                print("Found key2: ", bitsQueue)
+                #Final sensor to send data
+                vibrations_sensed[2] = 1
+                break
+        
+        if cycles_to_wait == 1:
+                break
+        else:
+           cycles_to_wait = cycles_to_wait - 1
+                
+        time.sleep(POLLING_FREQUENCY)
+        
+print("FOUND KEY ", vibrations_sensed)
