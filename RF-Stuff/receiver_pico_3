@@ -32,7 +32,7 @@ for i in range(10000000000):
         if rf_value > 60000:
             bitsQueue.append(1)
             bitsQueue.pop(0)
-        if rf_value < 500:
+        elif rf_value < 500:
             bitsQueue.append(0)
             bitsQueue.pop(0)
         else:
