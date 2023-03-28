@@ -4,7 +4,7 @@ import utime
 
  #-----------------rf portion------------------------------------------
 #Initialize Prepherials
-out = Pin(15, Pin.OUT)
+out = Pin(2, Pin.OUT)
 #How long each bit will be outputted (held high or low) before next bit, in seconds
 OUTPUT_LEN = .1
 #There are 3 vibration sensors, each with an individual number and key to identify it
