@@ -1,0 +1,24 @@
+import machine
+import time
+import utime
+
+# Set up the input pin for IR sensor
+rf_pin = machine.ADC(26)
+
+bitsQueue = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+for i in range(10000000000):
+        rf_value = rf_pin.read_u16()
+        if rf_value > 60000:
+            bitsQueue.append(1)
+            bitsQueue.pop(0)
+        if rf_value < 1000:
+            bitsQueue.append(0)
+            bitsQueue.pop(0)
+        print(rf_value, bitsQueue)
+        if bitsQueue = [1,0,1,0,1,0,1,0,1,0,1,0]:
+            break:
+        time.sleep(0.05)
+        
+print("FOUND KEY")
+        
