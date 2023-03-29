@@ -12,11 +12,11 @@ POT_Value = ADC(0) #Which ADC converter are we using for piezoelctric input
 conversion_factor = 3.3/(65536) #Convert ADC output to voltage
 
 #Which sensor number is this
-if sensor_num == 0: 
+if SENSOR_NUM == 0: 
     key = "100" + "101" + "101" + "001"
-if sensor_num == 1: 
+if SENSOR_NUM == 1: 
     key = "110" + "010" + "101" + "001"
-if sensor_num == 2: 
+if SENSOR_NUM == 2: 
     key = "101" + "110" + "011" + "101"
 
 #Output 433 MHz RF to signal fall
