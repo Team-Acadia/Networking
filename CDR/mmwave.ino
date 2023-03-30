@@ -37,8 +37,8 @@ void loop()
     
     radar.ShowData(dataMsg);                 //Serial port prints a set of received data frames
     if (Serial.available()){
-      String message = Serial.readStringUntil("\n");
-      if (message.indexOf("CE")==-1){
+      String message = Serial.readStringUntil('\n');
+      if (message.indexOf("A suspected fall was detected.")==-1){
           if (!client.connect(server_address, server_port)){
               Serial.println("Failed to connect to server");
               delay(250);
