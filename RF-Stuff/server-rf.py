@@ -11,20 +11,19 @@ import _thread
 
 #------------Buzzer to check if running ---------------
 
-buzzer_pin = Pin(0, Pin.OUT)
-
+b = Pin(16,Pin.OUT)
 # Generate a 2 kHz square wave for 1 second
 for i in range(1000):
-    buzzer_pin.on()
+    b.on()
     time.sleep_us(250)  # 50% duty cycle
-    buzzer_pin.off()
+    b.off()
     time.sleep_us(250)
 
-buzzer_pin.off()
+b.off()
+
 #--------------Defining the wifi components ----------------------------------------------
 rf_pin = Pin(26,Pin.IN)
-a = Pin(0,Pin.IN,Pin.PULL_UP)
-b = Pin(15,Pin.OUT)
+a = Pin(26,Pin.IN,Pin.PULL_DOWN)
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect("PeaceisAwesome", "32439344")
@@ -66,11 +65,11 @@ def notification(start):
         endtime = time.time()
         interval = endtime - start
         print(interval)
-        if a.value() ==0 and interval < 90:
+        if a.value() ==1 and interval < 90:
             print("Button Pressed")
             seq = 1
             break
-        if interval > 90:
+        if interval > 10:
             print("Not pressed in time")
             break
         if seq == 0:
@@ -108,10 +107,10 @@ def handleRf(ID):
     while True:
     #---------Checking to see if the rf receiver detected the key -----------
         if len(ID) < len(key):
-            print(ID)
+            #print(ID)
             ID.append(rf_pin.value())
         else:
-            print(ID)
+            #print(ID)
             ID.append(rf_pin.value())
             ID.pop(0)
         if ID == key:
@@ -144,4 +143,4 @@ seq =0
 _thread.start_new_thread(handleWifi,())
 handleRf(ID)
 
-        
+
