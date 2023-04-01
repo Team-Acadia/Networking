@@ -45,6 +45,7 @@ class FallDetectionRadar{
         byte Msg[12];
         boolean newData = false;
         void SerialInit();
+        void WiFiInit();
         void recvRadarBytes();
         void Bodysign_judgment(byte inf[], float Move_min, float Move_max);
         void Situation_judgment(byte inf[]);
