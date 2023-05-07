@@ -2,12 +2,13 @@
 FallDetectionRadar radar;
 void setup() {
  pinMode(22, OUTPUT);
+ pinMode(25, OUTPUT); 
  radar.SerialInit();
  Serial.begin(9600);
  delay(1500);
  Serial.println("Ready");
 }
-
+void blinkLED();
 void loop() {
   radar.recvRadarBytes(); //Receive radar data and start processing
   if (radar.newData == true) { //The data is received and transferred to the new list dataMsg[]
@@ -20,15 +21,23 @@ void loop() {
     radar.ShowData(dataMsg); //Serial port prints a set of received data frames
     int returned = radar.Fall_inf(dataMsg); //Sleep information output
     if (returned == 1){
+      blinkLED();
       Serial.println("test");
-      digitalWrite(22, HIGH);
-      delay(100);
-      digitalWrite(22, LOW);
-      delay(100);
-      digitalWrite(22, HIGH);
-      delay(100);
-      digitalWrite(22, LOW);
-      delay(100);
   }
 }
 }
+
+void blinkLED(){
+  digitalWrite(22, HIGH);
+  delay(100);
+  digitalWrite(22, LOW);
+  delay(100);
+  digitalWrite(22, HIGH);
+  delay(100);
+  digitalWrite(22, LOW);
+  delay(100);
+    digitalWrite(22, HIGH);
+  delay(100);
+  digitalWrite(22, LOW);
+  delay(100);
+ }
