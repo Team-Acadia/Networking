@@ -107,7 +107,6 @@ def notification(start):
 
 #-----------------------------Connecting to Wifi------------------------------------------------------------------------
 print("Wifi connecting")
-"""
 SSID = "PeaceisAwesome"
 PASSWORD = "32439344"
 # Connect to Wi-Fi
@@ -117,7 +116,6 @@ wifi.connect(SSID, PASSWORD)
 
 while not wifi.isconnected():
     pass
-"""
 print("wifi connected")
 
 buzzer()
@@ -183,12 +181,14 @@ while True:
         vibrationKey =  [int("".join(str(bit) for bit in vibrationKey))]
         if vibrationKey == vibrationKey0:
             print("Found vibrationKey0: ", vibrationKey)
+            SendToAppOne()
             # Allow time for other vibration sensors to also send their data
             vibrationKey = []
             vibrations_sensed[0] = 1
             sensorTimes[0] = time.gmtime()[4:6]
         elif vibrationKey == vibrationKey1:
             print("Found vibrationKey1: ", vibrationKey)
+            SendToAppTwo()
             # 2nd sensor to send data
             vibrationKey = []
             vibrations_sensed[1] = 1
@@ -211,6 +211,7 @@ while True:
         bitsQueue2 = []
         if mmwaveKey == mmWaveKey0:
             print("Found mmWaveKey0: ", mmwaveKey)
+            SendToAppThree()
             mmWave_status = 1
             mmwaveKey = []
             sensorTimes[2] = time.gmtime()[4:6]
